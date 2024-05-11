@@ -25,6 +25,7 @@ const Courses = require("./routes/addCoursesRoutes");
 const Lessos = require("./routes/LessonRoutes");
 const profile = require("./routes/userProfileRoutes");
 const adminGetRoutes = require("./routes/adminGetRoutes");
+const { verifyToken } = require("./middleware/verfiyToken");
 
 app.use(UserSignup);
 
@@ -60,18 +61,16 @@ app.post("/api/khalti", async (req, res) => {
 });
 
 app.put("/membership", async (req, res) => {
-  const token = req.headers.authorization.split(" ")[1];
-  const decoded = jwt.verify(token, process.env.JWT_SECRET);
-  const userId = decoded.userId;
+  const userId = parseInt(req.body.userId);
+
+  console.log("User ID", userId);
 
   try {
-    const token = req.headers.authorization.split(" ")[1];
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const userId = decoded.userId;
-
-    const user = await prisma.users.findById(userId);
+    const user = await prisma.users.update({
+      where: { user_id: userId },
+      data: { isMember: true },
+    });
     console.log(user);
-    user.membership = true;
   } catch (error) {
     console.error("Error updating user membership", error);
     res.status(500).json({ message: "Error updating user membership" });

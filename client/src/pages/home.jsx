@@ -16,6 +16,8 @@ export const Home = () => {
   />;
 
   const [user, setUser] = useState(null);
+  let query = useQuery();
+  let status = query.get("status");
 
   const initiatePayment = async () => {
     try {
@@ -56,6 +58,8 @@ export const Home = () => {
           console.log("User data:", responseData);
           setUser(responseData);
           localStorage.setItem("user", responseData.user.name);
+          localStorage.setItem("userId", responseData.user.user_id);
+          localStorage.setItem("isMember", responseData.user.isMember);
         } else {
           console.error("Failed to fetch user data");
         }
@@ -66,6 +70,36 @@ export const Home = () => {
 
     getUser();
   }, []);
+
+  const userId = localStorage.getItem("userId");
+
+  useEffect(() => {
+    console.log("user ID", userId);
+    if (status === "Completed") {
+      // Call your API here
+      fetch("http://localhost:3000/membership", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId: userId }),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          // Handle the response here
+          console.log(data);
+        })
+        .catch((error) => {
+          // Handle the error here
+          console.log(error);
+        });
+    }
+  }, [status]);
 
   return (
     <div className="flex w-full justify-center py-12">
@@ -78,9 +112,22 @@ export const Home = () => {
             <h2 className="text-2xl font-semibold pb-4">
               Everything you need to learn THE Instrument!
             </h2>
-            <Button onClick={initiatePayment} variant="contained">
-              Membership
-            </Button>
+            {
+              // Display a message if the user is a member
+              user && user.user.isMember && (
+                <h3 className="text-2xl font-semibold pb-4">
+                  You are a member!
+                </h3>
+              )
+            }
+            {
+              // Display a message if the user is not a member
+              user && !user.user.isMember && (
+                <Button onClick={initiatePayment} variant="contained">
+                  Membership
+                </Button>
+              )
+            }
           </div>
         </div>
       </Card>
