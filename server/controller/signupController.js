@@ -38,6 +38,7 @@ exports.addUser = async (req, res) => {
         name,
         email,
         password: hashedPassword,
+        isMember: false,
       },
     });
 

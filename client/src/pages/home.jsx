@@ -3,6 +3,11 @@ import Card from "@mui/material/Card";
 import { ThemeContext } from "@emotion/react";
 import pic from "../../public/hands.jpg";
 import Button from "@mui/material/Button";
+import { useLocation } from "react-router-dom";
+
+function useQuery() {
+  return new URLSearchParams(useLocation().search);
+}
 
 export const Home = () => {
   <link
@@ -11,6 +16,25 @@ export const Home = () => {
   />;
 
   const [user, setUser] = useState(null);
+
+  const initiatePayment = async () => {
+    try {
+      const response = await fetch("http://localhost:3000/api/khalti", {
+        method: "POST",
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const responseData = await response.json();
+      console.log(responseData);
+      console.log(responseData.data.payment_url);
+      window.location.href = responseData.data.payment_url;
+    } catch (error) {
+      console.error("Error initiating payment", error);
+    }
+  };
 
   useEffect(() => {
     const getUser = async () => {
@@ -30,9 +54,8 @@ export const Home = () => {
         if (response.ok) {
           const responseData = await response.json();
           console.log("User data:", responseData);
-          // localStorage.setItem("user", JSON.stringify(responseData));
-          localStorage.setItem("user", responseData.user.name);
           setUser(responseData);
+          localStorage.setItem("user", responseData.user.name);
         } else {
           console.error("Failed to fetch user data");
         }
@@ -55,6 +78,9 @@ export const Home = () => {
             <h2 className="text-2xl font-semibold pb-4">
               Everything you need to learn THE Instrument!
             </h2>
+            <Button onClick={initiatePayment} variant="contained">
+              Membership
+            </Button>
           </div>
         </div>
       </Card>
