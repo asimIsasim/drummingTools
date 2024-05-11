@@ -35,10 +35,12 @@ export const Login = () => {
         if (data.token) {
           // Save token to local storage
           localStorage.setItem("token", data.token);
-
+          console.log(data);
+          // localStorage.setItem("user", data);
           setMessage("Login successful!");
           // Redirect to Learn page after successful login
           navigate("/");
+          window.location.reload();
         } else {
           setMessage("Login failed.");
         }

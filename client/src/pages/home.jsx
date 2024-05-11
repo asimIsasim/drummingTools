@@ -10,37 +10,39 @@ export const Home = () => {
     href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
   />;
 
-  // const [user, setUser] = useState(null);
+  const [user, setUser] = useState(null);
 
-  // useEffect(() => {
-  //   const getUser = async () => {
-  //     try {
-  //       const token = localStorage.getItem("token");
-  //       if (!token) {
-  //         console.log("User not logged in.");
-  //         return;
-  //       }
+  useEffect(() => {
+    const getUser = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          console.log("User not logged in.");
+          return;
+        }
 
-  //       const response = await fetch("http://localhost:3000/getProfile", {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       });
+        const response = await fetch("http://localhost:3000/getProfile", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
-  //       if (response.ok) {
-  //         const responseData = await response.json();
-  //         console.log("User data:", responseData);
-  //         setUser(responseData);
-  //       } else {
-  //         console.error("Failed to fetch user data");
-  //       }
-  //     } catch (error) {
-  //       console.error("Error occurred while fetching user data:", error);
-  //     }
-  //   };
+        if (response.ok) {
+          const responseData = await response.json();
+          console.log("User data:", responseData);
+          // localStorage.setItem("user", JSON.stringify(responseData));
+          localStorage.setItem("user", responseData.user.name);
+          setUser(responseData);
+        } else {
+          console.error("Failed to fetch user data");
+        }
+      } catch (error) {
+        console.error("Error occurred while fetching user data:", error);
+      }
+    };
 
-  //   getUser();
-  // }, []);
+    getUser();
+  }, [user]);
 
   return (
     <div className="flex w-full justify-center py-12">
