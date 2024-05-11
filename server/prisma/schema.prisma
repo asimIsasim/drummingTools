@@ -1,0 +1,55 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model users {
+  user_id           Int                 @id @default(autoincrement())
+  name              String              @db.VarChar(50)
+  email             String              @unique @db.VarChar(100)
+  password          String              @db.VarChar(255)
+  practice_routines practice_routines[]
+}
+
+model courses {
+  course_id Int      @id @default(autoincrement())
+  name      String
+  lesson    lesson[]
+}
+
+model lesson {
+  lesson_id   Int     @id @default(autoincrement())
+  title       String
+  description String
+  video       String  @db.VarChar(255)
+  course_id   Int
+  courses     courses @relation(fields: [course_id], references: [course_id], map: "Lesson_course_id_fkey")
+
+  @@index([course_id], map: "Lesson_course_id_fkey")
+}
+
+model practice_routines {
+  practice_routine_id Int                 @id @default(autoincrement())
+  name                String              @db.VarChar(50)
+  aim                 String              @db.VarChar(100)
+  user                Int?
+  users               users?              @relation(fields: [user], references: [user_id], onDelete: Restrict, onUpdate: Restrict, map: "practice_routines_ibfk_1")
+  practice_sessions   practice_sessions[]
+
+  @@index([user], map: "user")
+}
+
+model practice_sessions {
+  practice_sessions_id Int               @id @default(autoincrement())
+  filepath             String
+  bpm                  Int?
+  RoutineID            Int
+  description          String
+  practice_routines    practice_routines @relation(fields: [RoutineID], references: [practice_routine_id], onUpdate: Restrict, map: "routine key")
+
+  @@index([RoutineID], map: "routine key")
+}

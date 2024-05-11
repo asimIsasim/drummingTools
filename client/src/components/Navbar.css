@@ -1,0 +1,14 @@
+.container {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px;
+}
+
+ul {
+  display: flex;
+  gap: 3.2rem;
+}
+
+li {
+  list-style: none;
+}
