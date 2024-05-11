@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 
 import {
@@ -22,20 +22,28 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Link } from "react-router-dom";
 
 export default function AddCourses() {
-  const [lesson, setLesson] = useState("");
+  const [course, setCourse] = useState({
+    name: "",
+    description: "",
+  });
+  const [courses, setCourses] = useState([]);
   const { toast } = useToast();
 
   const handleAddLesson = async () => {
-    console.log(lesson);
+    console.log(course);
     try {
       const response = await fetch("http://localhost:3000/addCourses", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ name: lesson }),
+        body: JSON.stringify({
+          name: course.name,
+          description: course.description,
+        }),
       });
 
       toast({
@@ -55,28 +63,23 @@ export default function AddCourses() {
     }
   };
 
-  const courses = [
-    {
-      coursename: "Rhythm & Blues Riffs Workshop",
-      coursedescription:
-        "Explore the rich history of rhythm and blues guitar riffs in this hands-on workshop. Master classic licks and develop your own signature style.",
-    },
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await fetch("http://localhost:3000/getCourses");
+      const data = await response.json();
+      console.log(data);
+      setCourses(data);
+    };
 
-    {
-      coursename: "Fusion Drum Fusion",
-      coursedescription:
-        "Discover the art of fusion drumming in this dynamic course. Blend elements of jazz, funk, and rock to create exciting rhythmic textures.",
-    },
-    {
-      coursename: "Latin Percussion Fiesta",
-      coursedescription:
-        "Immerse yourself in the vibrant rhythms of Latin percussion in this lively course. From salsa to samba, expand your repertoire and spice up your playing.",
-    },
-    {
-      coursename: "Learn Jazz Drumming",
-      coursedescription: "Jazz Drumming is all about stick control and feel.",
-    },
-  ];
+    fetchData();
+  }, []);
+
+  interface Course {
+    course_id: string;
+    name: string;
+    description: string;
+  }
+
   return (
     <div className="flex gap-6 mt-12">
       <Card className="w-[350px]">
@@ -88,16 +91,23 @@ export default function AddCourses() {
           <form>
             <div className="grid w-full items-center gap-4">
               <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="name">Lessons Name:</Label>
+                <Label htmlFor="name">Course Name:</Label>
                 <Input
                   id="name"
-                  placeholder="Name of your lesson"
-                  onChange={(e) => setLesson(e.target.value)}
+                  placeholder="Name of your course"
+                  onChange={(e) =>
+                    setCourse({ ...course, name: e.target.value })
+                  }
                 />
               </div>
               <div className="flex flex-col space-y-1.5">
-                <Label htmlFor="framework">Lesson Description:</Label>
-                <Textarea placeholder="Description about the lesson." />
+                <Label htmlFor="framework">Course Description:</Label>
+                <Textarea
+                  placeholder="Description about the lesson."
+                  onChange={(e) =>
+                    setCourse({ ...course, description: e.target.value })
+                  }
+                />
               </div>
             </div>
           </form>
@@ -118,24 +128,24 @@ export default function AddCourses() {
               <TableHead className="w-[100px]">S.no</TableHead>
               <TableHead>Courses</TableHead>
               <TableHead>Description</TableHead>
+              <TableHead>Action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {courses.map((course, index) => (
+            {courses.map((course: Course, index) => (
               <TableRow key={index}>
                 <TableCell className="font-medium">{index + 1}</TableCell>
-                <TableCell className="">{course.coursename}</TableCell>
+                <TableCell className="">{course.name}</TableCell>
 
-                <TableCell>{course.coursedescription}</TableCell>
+                <TableCell>{course.description}</TableCell>
+                <TableCell>
+                  <Link to={`addLessons/${course.course_id}`}>
+                    <Button variant="link">Add Lessons</Button>
+                  </Link>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
-          {/* <TableFooter>
-          <TableRow>
-            <TableCell colSpan={3}>Total</TableCell>
-            <TableCell className="text-right">$2,500.00</TableCell>
-          </TableRow>
-        </TableFooter> */}
         </Table>
       </Card>
     </div>

@@ -89,9 +89,9 @@ export default function Layout() {
             <Link to="addCourses">
               <Button variant="link">Add Courses</Button>
             </Link>
-            <Link to="addLessons">
+            {/* <Link to="addLessons">
               <Button variant="link">Add Lessons</Button>
-            </Link>
+            </Link> */}
           </div>
         </div>
         <div className="flex gap-4">
