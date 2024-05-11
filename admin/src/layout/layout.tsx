@@ -89,6 +89,9 @@ export default function Layout() {
             <Link to="addCourses">
               <Button variant="link">Add Courses</Button>
             </Link>
+            <Link to="users">
+              <Button variant="link">Users</Button>
+            </Link>
             {/* <Link to="addLessons">
               <Button variant="link">Add Lessons</Button>
             </Link> */}
