@@ -4,13 +4,14 @@ const prisma = new PrismaClient();
 
 exports.addCourse = async (req, res) => {
   console.log(req.body);
-  const { name } = req.body;
+  const { name, description } = req.body;
 
   try {
     // Create the course using Prisma client
     const newCourse = await prisma.courses.create({
       data: {
         name,
+        description,
       },
     });
 
