@@ -42,7 +42,7 @@ export const Home = () => {
     };
 
     getUser();
-  }, [user]);
+  }, []);
 
   return (
     <div className="flex w-full justify-center py-12">

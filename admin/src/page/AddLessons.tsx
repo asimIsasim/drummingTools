@@ -33,10 +33,20 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
+import { useParams } from "react-router-dom";
 
 export default function AddLessons() {
   const { toast } = useToast();
   const [lessons, setLessons] = useState([]);
+  const { id } = useParams();
+
+  const [lesson, setLesson] = useState({
+    title: "",
+    description: "",
+    video: "",
+    course_id: id,
+  });
+
   type Lesson = {
     id: number;
     title: string;
@@ -44,26 +54,56 @@ export default function AddLessons() {
     video: string;
   };
 
-  useEffect(() => {
-    // Function to fetch practice sessions data
-    async function fetchLessons() {
-      try {
-        const response = await fetch(
-          `http://localhost:3000/getLessons?courseId=5`
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch sessions");
-        }
-
-        const data = await response.json();
-        setLessons(data);
-      } catch (error) {
-        console.error("Error fetching sessions:", error);
-      }
+  const handleAddLesson = async () => {
+    const formData = new FormData();
+    formData.append("title", lesson.title);
+    formData.append("description", lesson.description);
+    formData.append("video", lesson.video);
+    if (lesson.course_id) {
+      formData.append("course_id", lesson.course_id);
     }
+    console.log(lesson);
+    try {
+      const response = await fetch("http://localhost:3000/addLesson", {
+        method: "POST",
+        body: formData,
+      });
 
-    fetchLessons();
-  }, []);
+      toast({
+        description: "Lesson Added Successfully.",
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      // Do something with the response
+    } catch (error) {
+      console.error(
+        "There has been a problem with your fetch operation:",
+        error
+      );
+    }
+  };
+
+  // useEffect(() => {
+  //   // Function to fetch practice sessions data
+  //   async function fetchLessons() {
+  //     try {
+  //       const response = await fetch(`http://localhost:3000/getLessons/${id}`);
+  //       if (!response.ok) {
+  //         throw new Error("Failed to fetch sessions");
+  //       }
+
+  //       const data = await response.json();
+  //       setLessons(data);
+  //     } catch (error) {
+  //       console.error("Error fetching sessions:", error);
+  //     }
+  //   }
+
+  //   fetchLessons();
+  // }, []);
   const videoBaseUrl = "http://localhost:3000/uploads/";
   console.log(lessons);
 
@@ -86,30 +126,41 @@ export default function AddLessons() {
                 <Label htmlFor="name" className="text-right">
                   Title
                 </Label>
-                <Input id="name" className="col-span-3" />
+                <Input
+                  id="name"
+                  className="col-span-3"
+                  onChange={(e) =>
+                    setLesson({ ...lesson, title: e.target.value })
+                  }
+                />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="username" className="text-right">
                   Description
                 </Label>
-                <Textarea className="col-span-3" />
+                <Textarea
+                  className="col-span-3"
+                  onChange={(e) =>
+                    setLesson({ ...lesson, description: e.target.value })
+                  }
+                />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="username" className="text-right">
                   Video
                 </Label>
-                <Input id="picture" type="file" className="col-span-3" />
+                <Input
+                  id="picture"
+                  type="file"
+                  className="col-span-3"
+                  onChange={(e) =>
+                    setLesson({ ...lesson, video: e.target.value })
+                  }
+                />
               </div>
             </div>
             <DialogFooter>
-              <Button
-                type="submit"
-                onClick={() => {
-                  toast({
-                    title: "Lesson Added Successfully!",
-                  });
-                }}
-              >
+              <Button type="submit" onClick={handleAddLesson}>
                 Add
               </Button>
             </DialogFooter>
