@@ -20,6 +20,7 @@ const SessionAdder = require("./routes/sessionAdderRoutes");
 const Courses = require("./routes/addCoursesRoutes");
 const Lessos = require("./routes/LessonRoutes");
 const profile = require("./routes/userProfileRoutes");
+const adminGetRoutes = require("./routes/adminGetRoutes");
 
 app.use(UserSignup);
 app.use(UserLogin);
@@ -28,6 +29,7 @@ app.use(SessionAdder);
 app.use(Courses);
 app.use(Lessos);
 app.use(profile);
+app.use(adminGetRoutes);
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
